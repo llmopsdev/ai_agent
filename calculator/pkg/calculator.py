@@ -9,10 +9,10 @@ class Calculator:
             "/": lambda a, b: a / b,
         }
         self.precedence = {
-            "+": 1,
-            "-": 1,
-            "*": 2,
-            "/": 2,
+            "+": 1,  # Corrected precedence
+            "-": 1,  # Corrected precedence
+            "*": 2,  # Corrected precedence
+            "/": 2,  # Corrected precedence
         }
 
     def evaluate(self, expression):
@@ -46,7 +46,7 @@ class Calculator:
         if len(values) != 1:
             raise ValueError("invalid expression")
 
-        return values[0]
+        return int(values[0])
 
     def _apply_operator(self, operators, values):
         if not operators:

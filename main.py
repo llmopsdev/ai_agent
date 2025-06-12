@@ -151,29 +151,36 @@ def main():
     prompt = sys.argv[1]
     verbose = len(sys.argv) > 2 and sys.argv[2] == "--verbose"
     model_name = "gemini-2.0-flash-001"
-
     messages = [types.Content(role="user", parts=[types.Part(text=prompt)])]
-    res = client.models.generate_content(
-        model=model_name,
-        contents=messages,
-        config=config,
-    )
+    n=0
+    while True:
+        res = client.models.generate_content(
+            model=model_name,
+            contents=messages,
+            config=config,
+        )
+        for candidate in res.candidates:
+            messages.append(candidate.content)
 
-    if res.function_calls:
-        for fc_part in res.function_calls:
-            call_result = call_function(fc_part, verbose=verbose)
+        if res.function_calls:
+            for fc_part in res.function_calls:
+                call_result = call_function(fc_part, verbose=verbose)
+                messages.append(call_result)
 
-            if (
-                not call_result.parts
-                or not call_result.parts[0].function_response
-                or call_result.parts[0].function_response.response is None
-            ):
-                raise RuntimeError("Fatal: function call produced no response")
+                if (
+                    not call_result.parts
+                    or not call_result.parts[0].function_response
+                    or call_result.parts[0].function_response.response is None
+                ):
+                    raise RuntimeError("Fatal: function call produced no response")
 
-            if verbose:
-                print(f"-> {call_result.parts[0].function_response.response}")
-    else:
-        print(res.text)
+                if verbose:
+                    print(f"-> {call_result.parts[0].function_response.response}")
+        else:
+            print(res.text)
+        n+=1
+        if (n>=20 or res.function_calls == None):
+            break
 
     if verbose:
         print(f"User prompt: {prompt}")

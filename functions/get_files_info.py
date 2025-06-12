@@ -6,7 +6,7 @@ def _format_entry(abs_dir_path, name):
             f"file_size={os.path.getsize(path)} bytes, "
             f"is_dir={os.path.isdir(path)}")
 
-def get_files_info(working_directory, directory):
+def get_files_info(working_directory, directory="."):
     try:
         abs_working_dir = os.path.abspath(working_directory)
         target_dir = directory or "."
